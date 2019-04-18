@@ -14,56 +14,24 @@ try {
     $db = new PDO($dsn, $user, $password);
     $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
     $stmt = $db->prepare("
-        select
-            t.detected_node
-            , t.major
-            , t.minor
-            , t.sensors_key
-            , t.sensors_value
-            , t.latitude
-            , t.longitude
-            , max(t.create_time) as create_time
-            , m.description
-            , m.sub_description
-            , m.picture
-            , m.url 
-        from
-            skeed_oz t 
-            left join skeed_node m 
-            on t.detected_node = m.node 
-        where
-            t.sensors_value <> '' 
-            and t.latitude <> '' 
-        group by
-            t.detected_node
-            , t.major
-            , t.minor 
-        union 
-        select
-            t.detected_node
-            , t.major
-            , t.minor
-            , t.sensors_key
-            , t.sensors_value
-            , 34.2053952 as latitude
-            , 134.6810688 as longitude
-            , max(t.create_time) as create_time
-            , m.description
-            , m.sub_description
-            , m.picture
-            , m.url 
-        from
-            skeed_oz t 
-            left join skeed_node m 
-            on t.detected_node = m.node 
-        where
-            t.detected_node = 'R3A-0000000031C7F85D' 
-            and t.sensors_value <> '' 
-        group by
-            t.detected_node
-            , t.major
-            , t.minor"
-        );
+    select
+        t.device
+        , t.temp
+        , t.volt
+        , t.distance
+        , max(t.create_time) as create_time
+        , m.description
+        , m.sub_description
+        , m.lat
+        , m.long
+        , m.picture 
+    from
+        sigfox_db t 
+        left join sigfox_device m 
+        on t.device = m.device
+    group by
+        t.device");
+
     // $stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
     $stmt->execute();
     $data = array();
@@ -74,12 +42,6 @@ try {
 } catch (PDOException $e) {
     die('エラー:' . $e->getMesssage());
 }
-
-
-
-
-
-
 
 //chart用データの取得
 // try {
@@ -253,13 +215,32 @@ try {
         
         //chart用データの取得
         <?php
-            $detected_node = 'R3A-0000000031C7F85D';
+            $device = '75B58B';
         
         try {
             $db = new PDO($dsn, $user, $password);
             $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-            $stmt = $db->prepare("select * from skeed_oz where sensors_value <> '' and detected_node = :detected_node order by detected_node, time");
-            $stmt->bindParam(':detected_node', $detected_node, PDO::PARAM_INT);
+            $stmt = $db->prepare("
+            select
+                t.device
+                , t.temp
+                , t.volt
+                , t.distance
+                , t.create_time
+                , m.description
+                , m.sub_description
+                , m.lat
+                , m.long
+                , m.picture 
+            from
+                sigfox_db t 
+                left join sigfox_device m 
+                    on t.device = m.device 
+            order by
+                t.device
+                , t.create_time");
+
+            $stmt->bindParam(':device', $device, PDO::PARAM_INT);
             $stmt->execute();
             $data1 = array();
             $count = $stmt->rowCount();
@@ -301,7 +282,7 @@ try {
     </script>
 
     <script>
-        // node地点を設定
+        // device地点を設定
         var latlong = [
             <?php
             $count = count($data);
@@ -309,18 +290,15 @@ try {
             foreach ($data as $row) {
                 $i++;
                 echo '{';
-                echo 'detected_node:' . $row['detected_node'] . ',';
-                echo 'major:' . $row['major'] . ',';
-                echo 'minor:' . $row['minor'] . ',';
-                echo 'sensors_key:' . hexdec($row['sensors_key']) . ',';
-                echo 'sensors_value:' . hexdec($row['sensors_value']) . ',';
-                echo 'latitude:' . $row['latitude'] . ',';
-                echo 'longitude:' . $row['longitude'] . ',';
+                echo 'device:' . $row['device'] . ',';
+                echo 'temp:' . $row['temp'] . ',';
+                echo 'volt:' . $row['volt'] . ',';
                 echo 'create_time:' . $row['create_time'] . ',';
                 echo 'description:"' . $row['description'] . '",';
                 echo 'sub_description:"' . $row['sub_description'] . '",';
+                echo 'lat:' . $row['lat'] . ',';
+                echo 'long:' . $row['long'] . ',';
                 echo 'picture:"' . $row['picture'] . '",';
-                echo 'url:"' . $row['url'] . '",';
                 if ($i == $count) {
                     echo '}';
                 } else {
@@ -331,7 +309,7 @@ try {
         ];
     </script>
 
-    <script src="js/skMapCode.js"></script>
+    <script src="js/sgMapCode.js"></script>
 
 </body>
 
