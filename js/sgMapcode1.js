@@ -12,7 +12,7 @@ google.maps.event.addDomListener(window, 'load', function() {
    
     var latlng = new google.maps.LatLng(lat, lng);
     var mapOptions = {
-        zoom: 12,
+        zoom: 10,
         center: latlng,
         mapTypeId: google.maps.MapTypeId.ROADMAP,
         scaleControl: true
@@ -31,19 +31,38 @@ google.maps.event.addDomListener(window, 'load', function() {
         var picture = this.picture;
         var markerObj;
 
-        console.log(description);
-
-        // 水位の応じて文字色を設定
+        // 水位の応じてマーカー色を設定
         markerObj = new google.maps.Marker({
             position: latlng,
             map: mapObj,
+            icon: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=|0099cc|",
+            // icon: {url: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=|ff0000|",
+            //        scaledSize: new google.maps.Size(30, 30)
+            // },
+            // icon: {
+            //     fillColor: "#FF0000",                //塗り潰し色
+            //     fillOpacity: 0.8,                    //塗り潰し透過率
+            //     path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW, //円を指定
+            //     scale: 10,                           //円のサイズ
+            //     strokeColor: "#FF0000",              //枠の色
+            //     strokeWeight: 1.0                    //枠の透過率
+            // },
+
+            // icon: {
+            //     path: 'M -8,-8 8,8 M 8,-8 -8,8',     //座標（×）
+            //     strokeColor: "#ff0000",              //線の色
+            //     strokeWeight: 4.0                    //線の太
+            // },
+
+            title: description,
             label: {
                 // color: '#0044aa',
-                color: '#ffffff',
+                // color: '#ffffff',
                 fontFamily: 'sans-serif',
-                fontSize: '14px',
+                fontSize: '18px',
                 fontWeight: 'bold',
-                text: String(waterLevel)
+                // text: String(waterLevel)
+                text: String("123")
             }
         });
 
