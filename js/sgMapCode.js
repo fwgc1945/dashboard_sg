@@ -1,4 +1,6 @@
 /* googleMapAPIにて地図を表示しています。
+    create: 2019.04.02
+    Author: DENSIN:KOORI
 
     google.maps.event.addDomListenerにてマーカーを表示
  */
@@ -16,16 +18,20 @@ google.maps.event.addDomListener(window, 'load', function () {
 
     // マーカー情報を更新
     jQuery.each(latlong, function () {
-        var sensors_value = this.sensors_value;
-        var latlng = new google.maps.LatLng(this.latitude, this.longitude);
+
+        // 平常時－計測値を水位とします。
+        var waterLevel = this.normally - this.distance;                        
+        var latlng = new google.maps.LatLng(this.lat, this.long);        
         var description = this.description;
         var subDescription = this.sub_description;
+        var attention_level = this.attention_level;
+        var alert_level = this.alert_level;
         var picture = this.picture;
-        var url = this.url;
         var markerObj;
 
         console.log(url);
 
+        // 水位の応じて文字色を設定
         markerObj = new google.maps.Marker({
             position: latlng,
             map: mapObj,
@@ -35,7 +41,7 @@ google.maps.event.addDomListener(window, 'load', function () {
                 fontFamily: 'sans-serif',
                 fontSize: '14px',
                 fontWeight: 'bold',
-                text: String(sensors_value)
+                text: String(waterLevel)
             }
         });
 
@@ -48,8 +54,8 @@ google.maps.event.addDomListener(window, 'load', function () {
             html +='p {font-size: 12px; font-family: sans-serif}';
             html +='a {font-size: 12px; font-family: sans-serif}';
             html += '</style>';
-            html += '<p><img src="images/route/' + picture + '" width= 100px alt=""></img>';
-            html += '<br><a href="' + url + '" target="_blank">' + ' ' + description + '</a>';
+            html += '<p><img src="images/' + picture + '" width= 100px alt=""></img>';
+            html += '<br><a href="" target="_blank">' + ' ' + description + '</a>';
             html += '<br>' + subDescription + '</p>';
 
             // info Windowを作成

@@ -1,5 +1,6 @@
-/*  chart.jsにてグラフを表示
-    create:2019.04.02
+/* chart.jsにて水位グラフを表示
+    create: 2019.04.02
+    Author: DENSIN:KOORI
 */
 
 // グラフデータの設定
@@ -34,7 +35,7 @@ var config = {
 let max = data1.length;
 let vals = [data1.length - 10, data1.length];
 
-$("#myslider1").slider({
+$("#slider1").slider({
     max: max, //最大値
     min: 0, //最小値
     values: vals, //初期値

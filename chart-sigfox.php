@@ -24,6 +24,9 @@ try {
         , m.sub_description
         , m.lat
         , m.long
+        , m.normally
+        , m.attention_level
+        , m.alert_level
         , m.picture 
     from
         sigfox_db t 
@@ -230,6 +233,9 @@ try {
                 , m.sub_description
                 , m.lat
                 , m.long
+                , m.normally
+                , m.attention_level
+                , m.alert_level
                 , m.picture 
             from
                 sigfox_db t 
@@ -258,11 +264,16 @@ try {
         // グラフ(左)のラベル
         const label1 = device + ':水位計';
         // グラフ(右)のラベル
-        const label2 = device + ':温度計';
+        const label2 = '温度計';
+
+        const label3 = '注意レベル';
+        const label4 = '警報レベル';
 
         // グラフのデータ
         let data1 = [];
         let data2 = [];
+        let data3 = [];
+        let data4 = [];
 
         <?php
         foreach ($data1 as $row) {
@@ -270,6 +281,12 @@ try {
         }
         foreach ($data1 as $row) {
             echo "data2.push('" . $row['temp'] . "');";
+        }
+        foreach ($data1 as $row) {
+            echo "data3.push('" . $row['attention_level'] . "');";
+        }
+        foreach ($data1 as $row) {
+            echo "data4.push('" . $row['alert_level'] . "');";
         }
         ?>
     </script>
@@ -292,11 +309,15 @@ try {
                 echo 'device:' . $row['device'] . ',';
                 echo 'temp:' . $row['temp'] . ',';
                 echo 'volt:' . $row['volt'] . ',';
+                echo 'distance:' . $row['distance'] . ',';
                 echo 'create_time:' . $row['create_time'] . ',';
                 echo 'description:"' . $row['description'] . '",';
                 echo 'sub_description:"' . $row['sub_description'] . '",';
                 echo 'lat:' . $row['lat'] . ',';
                 echo 'long:' . $row['long'] . ',';
+                echo 'normally:' . $row['normally'] . ',';
+                echo 'attention_level:' . $row['attention_level'] . ',';
+                echo 'alert_level:' . $row['alert_level'] . ',';
                 echo 'picture:"' . $row['picture'] . '",';
                 if ($i == $count) {
                     echo '}';
