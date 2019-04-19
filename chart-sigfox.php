@@ -67,11 +67,13 @@ try {
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>ダッシュボード</title>
+    <title>sigfox水位計ダッシュボード</title>
 
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS"
-        crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+        integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
 
+    <script src="http://maps.google.com/maps/api/js?v=3&sensor=false&key=AIzaSyBr21j2fw7PjrfdQyGU_4WFLZNqWWACmMo"
+        type="text/javascript" charset="UTF-8"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
 
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -121,7 +123,8 @@ try {
                         </li>
                     </ul>
 
-                    <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+                    <h6
+                        class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
                         <span>対象データ</span>
                         <!-- <a class="d-flex align-items-center text-muted" href="#">
                             <span data-feather="plus-circle"></span>
@@ -157,7 +160,8 @@ try {
             </nav>
 
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <div
+                    class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
                     <h1 class="h2">センサー MAP</h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
 
@@ -184,10 +188,10 @@ try {
                             echo '<li>' . $row['detected_node'] . '</li>';
                         }
                         ?> -->
-                    </ul>                    
+                    </ul>
 
-                    <div id="map" class="map col-sm-10">
-                              
+                    <div id="map" style="width:800px; height:400px"> </div>
+
                     <div class="col-sm-9">
                         <canvas id="chart1" height="110"></canvas>
                     </div>
@@ -214,11 +218,11 @@ try {
     </div>
 
     <script>
-        let labels = [];
-        let device = '75B58B';
-        
-        //chart用データの取得
-        <?php       
+    let labels = [];
+    let device = '75B58B';
+
+    //chart用データの取得
+    <?php       
         try {
             $db = new PDO($dsn, $user, $password);
             $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
@@ -261,21 +265,21 @@ try {
         }
         ?>
 
-        // グラフ(左)のラベル
-        const label1 = device + ':水位計';
-        // グラフ(右)のラベル
-        const label2 = '温度計';
+    // グラフ(左)のラベル
+    const label1 = device + ':水位計';
+    // グラフ(右)のラベル
+    const label2 = '温度計';
 
-        const label3 = '注意レベル';
-        const label4 = '警報レベル';
+    const label3 = '注意レベル';
+    const label4 = '警報レベル';
 
-        // グラフのデータ
-        let data1 = [];
-        let data2 = [];
-        let data3 = [];
-        let data4 = [];
+    // グラフのデータ
+    let data1 = [];
+    let data2 = [];
+    let data3 = [];
+    let data4 = [];
 
-        <?php
+    <?php
         foreach ($data1 as $row) {
             echo "data1.push('" . $row['distance'] . "');";
         }
@@ -294,31 +298,31 @@ try {
     <script src="js/sgChart1.js"></script>
 
     <script>
-        feather.replace()
+    feather.replace()
     </script>
 
     <script>
-        // device地点を設定
-        var latlong = [
-            <?php
+    // device地点を設定
+    var latlong = [
+        <?php
             $count = count($data);
             $i = 0;
             foreach ($data as $row) {
                 $i++;
                 echo '{';
-                echo 'device:' . $row['device'] . ',';
+                echo 'device:"' . $row['device'] . '",';
                 echo 'temp:' . $row['temp'] . ',';
                 echo 'volt:' . $row['volt'] . ',';
                 echo 'distance:' . $row['distance'] . ',';
-                echo 'create_time:' . $row['create_time'] . ',';
+                echo 'create_time:"' . $row['create_time'] . '",';
                 echo 'description:"' . $row['description'] . '",';
                 echo 'sub_description:"' . $row['sub_description'] . '",';
-                echo 'lat:' . $row['lat'] . ',';
-                echo 'long:' . $row['long'] . ',';
+                echo 'lat:"' . $row['lat'] . '",';
+                echo 'long:"' . $row['long'] . '",';
                 echo 'normally:' . $row['normally'] . ',';
                 echo 'attention_level:' . $row['attention_level'] . ',';
                 echo 'alert_level:' . $row['alert_level'] . ',';
-                echo 'picture:"' . $row['picture'] . '",';
+                echo 'picture:"' . $row['picture'] . '"';
                 if ($i == $count) {
                     echo '}';
                 } else {
@@ -326,10 +330,10 @@ try {
                 }
             }
             ?>
-        ];
+    ];
     </script>
 
-    <script src="js/sgMapCode.js"></script>
+    <script src="js/sgMapCode1.js"></script>
 
 </body>
 
