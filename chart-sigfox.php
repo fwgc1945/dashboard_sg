@@ -9,7 +9,7 @@ $dsn = 'mysql:host=localhost;dbname=fwgc1945_densin;charset=utf8';
 $user = 'root';
 $password = '';
 
-//googleMap用データの取得1
+//googleMap用データの取得
 try {
     $db = new PDO($dsn, $user, $password);
     $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
@@ -212,11 +212,10 @@ try {
 
     <script>
         let labels = [];
+        let device = '75B58B';
         
         //chart用データの取得
-        <?php
-            $device = '75B58B';
-        
+        <?php       
         try {
             $db = new PDO($dsn, $user, $password);
             $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
@@ -240,7 +239,7 @@ try {
                 t.device
                 , t.create_time");
 
-            $stmt->bindParam(':device', $device, PDO::PARAM_INT);
+            //$stmt->bindParam(':device', $device, PDO::PARAM_INT);
             $stmt->execute();
             $data1 = array();
             $count = $stmt->rowCount();
@@ -252,14 +251,14 @@ try {
         }
 
         foreach ($data1 as $row) {
-            echo "labels.push('" . $row['time'] . "');";
+            echo "labels.push('" . $row['create_time'] . "');";
         }
         ?>
 
         // グラフ(左)のラベル
-        const label1 = '101-9001:水位計1';
+        const label1 = device + ':水位計';
         // グラフ(右)のラベル
-        const label2 = '101-9002:水位計2';
+        const label2 = device + ':温度計';
 
         // グラフのデータ
         let data1 = [];
@@ -267,15 +266,15 @@ try {
 
         <?php
         foreach ($data1 as $row) {
-            echo "data1.push('" . hexdec($row['sensors_value']) . "');";
+            echo "data1.push('" . $row['distance'] . "');";
         }
         foreach ($data1 as $row) {
-            echo "data2.push('" . hexdec($row['sensors_value']) * 0.9 . "');";
+            echo "data2.push('" . $row['temp'] . "');";
         }
         ?>
     </script>
 
-    <script src="js/skChart1.js"></script>
+    <script src="js/sgChart1.js"></script>
 
     <script>
         feather.replace()
