@@ -19,52 +19,130 @@ google.maps.event.addDomListener(window, 'load', function() {
     };
     var mapObj = new google.maps.Map(document.getElementById('map'), mapOptions);
 
+
     jQuery.each(latlong, function() {
 
-        // 平常時－計測値を水位とします。
-        var waterLevel = this.normally - this.distance;
+        console.log('基準線:',this.reference_line, this.distance);
+
+        // 基準線－計測値を水位とします。
+        var waterLevel = this.reference_line - this.distance;
+        var create_time = this.create_time; 
         var latlng = new google.maps.LatLng(this.lat, this.long);
         var description = this.description;
         var subDescription = this.sub_description;
+        var normally_level = this.normally_level;
         var attention_level = this.attention_level;
         var alert_level = this.alert_level;
         var picture = this.picture;
         var markerObj;
 
-        // 水位の応じてマーカー色を設定
-        markerObj = new google.maps.Marker({
-            position: latlng,
-            map: mapObj,
-            icon: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=|0099cc|",
-            // icon: {url: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=|ff0000|",
-            //        scaledSize: new google.maps.Size(30, 30)
-            // },
-            // icon: {
-            //     fillColor: "#FF0000",                //塗り潰し色
-            //     fillOpacity: 0.8,                    //塗り潰し透過率
-            //     path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW, //円を指定
-            //     scale: 10,                           //円のサイズ
-            //     strokeColor: "#FF0000",              //枠の色
-            //     strokeWeight: 1.0                    //枠の透過率
-            // },
+        // 水位に応じてマーカー色を設定
+        // 平常時
+        if (waterLevel <= normally_level) {
+            markerObj = new google.maps.Marker({
+                position: latlng,
+                map: mapObj,
+                // animation: google.maps.Animation.BOUNCE,    
+                icon: {url:"http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=|00ff00|",
+                       scaledSize: new google.maps.Size(25, 40),
+                },    
+                title: description,
+                label: {
+                    // color: '#0044aa',
+                    color: '#0000ff',
+                    fontFamily: 'sans-serif',
+                    fontSize: '40px',
+                    fontWeight: 'bold',
+                    text: String(waterLevel+'cm')
+                }
+            });
+                
+        };
 
-            // icon: {
-            //     path: 'M -8,-8 8,8 M 8,-8 -8,8',     //座標（×）
-            //     strokeColor: "#ff0000",              //線の色
-            //     strokeWeight: 4.0                    //線の太
-            // },
+        // 注意値
+        if (waterLevel >= attention_level) {
+            markerObj = new google.maps.Marker({
+                position: latlng,
+                map: mapObj,
+                animation: google.maps.Animation.BOUNCE,    
+                icon: {url: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=|ffff00|",
+                        scaledSize: new google.maps.Size(25, 40)
+                },    
+                title: description,
+                label: {
+                    // color: '#0044aa',
+                    color: '#0000ff',
+                    fontFamily: 'sans-serif',
+                    fontSize: '40px',
+                    fontWeight: 'bold',
+                    text: String(waterLevel+'cm')
+                }
+            });                   
+        }; 
 
-            title: description,
-            label: {
-                // color: '#0044aa',
-                // color: '#ffffff',
-                fontFamily: 'sans-serif',
-                fontSize: '18px',
-                fontWeight: 'bold',
-                // text: String(waterLevel)
-                text: String("123")
-            }
-        });
+        // 警報値
+        if (waterLevel >= alert_level) {
+            markerObj = new google.maps.Marker({
+                position: latlng,
+                map: mapObj,
+                animation: google.maps.Animation.BOUNCE,    
+                icon: {url: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=|ff0000|",
+                        scaledSize: new google.maps.Size(25, 40)
+                },    
+                title: description,
+                label: {
+                    // color: '#0044aa',
+                    color: '#0000ff',
+                    fontFamily: 'sans-serif',
+                    fontSize: '40px',
+                    fontWeight: 'bold',
+                    text: String(waterLevel+'cm')
+                }
+            });                   
+        }; 
+
+        // markerObj = new google.maps.Marker({
+        //     position: latlng,
+        //     map: mapObj,
+        //     animation: google.maps.Animation.BOUNCE,
+
+        //     icon: {url:"http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=|0099cc|",
+        //            scaledSize: new google.maps.Size(25, 40),
+        //     },
+
+        //     icon: {url: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=|ff0000|",
+        //            scaledSize: new google.maps.Size(25, 40)
+        //     },
+
+        //     icon: {url: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=|ffff00|",
+        //            scaledSize: new google.maps.Size(25, 40)
+        //     },
+
+        //     // icon: {
+        //     //     fillColor: "#FF0000",                //塗り潰し色
+        //     //     fillOpacity: 0.8,                    //塗り潰し透過率
+        //     //     path: google.maps.SymbolPath.BACKWARD_CLOSED_ARROW, //円を指定
+        //     //     scale: 10,                           //円のサイズ
+        //     //     strokeColor: "#FF0000",              //枠の色
+        //     //     strokeWeight: 1.0                    //枠の透過率
+        //     // },
+
+        //     // icon: {
+        //     //     path: 'M -8,-8 8,8 M 8,-8 -8,8',     //座標（×）
+        //     //     strokeColor: "#ff0000",              //線の色
+        //     //     strokeWeight: 4.0                    //線の太
+        //     // },
+
+        //     title: description,
+        //     label: {
+        //         // color: '#0044aa',
+        //         color: '#0000ff',
+        //         fontFamily: 'sans-serif',
+        //         fontSize: '40px',
+        //         fontWeight: 'bold',
+        //         text: String(waterLevel+'cm')
+        //     }
+        // });
 
         // マーカークリックイベントを追加
         google.maps.event.addListener(markerObj, 'click', function() {
@@ -76,8 +154,13 @@ google.maps.event.addDomListener(window, 'load', function() {
             html += 'a {font-size: 14px; font-family: sans-serif}';
             html += '</style>';
             html += '<p><img src="images/' + picture + '" width= 100px alt=""></img>';
-            html += '<br><a href="" target="_blank">' + ' ' + description + '</a>';
-            html += '<br>' + subDescription + '</p>';
+            // html += '<br><a href="chart-sigfox.php" target="_blank">' + ' ' + description + '</a>';
+            html += '<br><a href="chart-sigfox.php?device=75B58B">' + ' ' + description + '</a>';
+            html += '<br>' + subDescription;
+            html += '<br>' + "最終更新日:" + create_time;
+            html += '<br>' + "　平常時:" + normally_level;
+            html += '<br>' + "　注意レベル:" + attention_level;
+            html += '<br>' + "　警報レベル:" + alert_level + '</p>';
 
             // info Windowを作成
             var infoWindow = new google.maps.InfoWindow();

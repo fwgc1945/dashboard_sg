@@ -10,41 +10,42 @@ $user = 'root';
 $password = '';
 
 //googleMap用データの取得
-try {
-    $db = new PDO($dsn, $user, $password);
-    $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-    $stmt = $db->prepare("
-    select
-        t.device
-        , t.temp
-        , t.volt
-        , t.distance
-        , max(t.create_time) as create_time
-        , m.description
-        , m.sub_description
-        , m.lat
-        , m.long
-        , m.normally
-        , m.attention_level
-        , m.alert_level
-        , m.picture 
-    from
-        sigfox_db t 
-        left join sigfox_device m 
-        on t.device = m.device
-    group by
-        t.device");
+// try {
+//     $db = new PDO($dsn, $user, $password);
+//     $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+//     $stmt = $db->prepare("
+//     select
+//         t.device
+//         , t.temp
+//         , t.volt
+//         , t.distance
+//         , max(t.create_time) as create_time
+//         , m.description
+//         , m.sub_description
+//         , m.lat
+//         , m.long
+//         , m.reference_line
+//         , m.normally_level
+//         , m.attention_level
+//         , m.alert_level
+//         , m.picture 
+//     from
+//         sigfox_db t 
+//         left join sigfox_device m 
+//         on t.device = m.device
+//     group by
+//         t.device");
 
-    // $stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
-    $stmt->execute();
-    $data = array();
-    $count = $stmt->rowCount();
-    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-        $data[] = $row;
-    }
-} catch (PDOException $e) {
-    die('エラー:' . $e->getMesssage());
-}
+//     // $stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
+//     $stmt->execute();
+//     $data = array();
+//     $count = $stmt->rowCount();
+//     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+//         $data[] = $row;
+//     }
+// } catch (PDOException $e) {
+//     die('エラー:' . $e->getMesssage());
+// }
 
 //chart用データの取得
 // try {
@@ -74,6 +75,9 @@ try {
 
     <script src="http://maps.google.com/maps/api/js?v=3&sensor=false&key=AIzaSyBr21j2fw7PjrfdQyGU_4WFLZNqWWACmMo"
         type="text/javascript" charset="UTF-8"></script>
+
+    markerwithlabel/src/markerwithlabel.js
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
 
     <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
@@ -134,6 +138,12 @@ try {
                         <li class="nav-item">
                             <a class="nav-link" href="#">
                                 <span data-feather="file-text"></span>
+                                最新（7日間）
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <span data-feather="file-text"></span>
                                 当月
                             </a>
                         </li>
@@ -166,10 +176,10 @@ try {
                     <div class="btn-toolbar mb-2 mb-md-0">
 
                         <div class="btn-group mr-2">
-                            <button type="button" class="btn btn-sm btn-outline-secondary">　活動タグ MAP　</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">　活動タグ 一覧　</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">　センサー MAP　</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">　センサー 一覧　</button>
+                            <!-- <button type="button" class="btn btn-sm btn-outline-secondary">　活動タグ MAP　</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">　活動タグ 一覧　</button> -->
+                            <button type="button" class="btn btn-sm btn-outline-secondary">　水位センサー MAP　</button>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">　水位センサー 一覧　</button>
                         </div>
 
                         <!-- <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
@@ -181,24 +191,24 @@ try {
 
                 <div class="row">
 
-                    <ul>
-                        <!-- <h3>node</h3>
+                    <!-- <ul>
+                        <h3>node</h3>
                         <?php
                         foreach ($data2 as $row) {
                             echo '<li>' . $row['detected_node'] . '</li>';
                         }
-                        ?> -->
-                    </ul>
+                        ?>
+                    </ul> -->
 
-                    <div id="map" style="width:800px; height:400px"> </div>
+                    <div id="map" style="height:500px" class="col-sm-10">> </div>
 
-                    <div class="col-sm-9">
-                        <canvas id="chart1" height="110"></canvas>
+                    <div class="col-sm-10">
+                        <canvas id="chart1" height="160px"></canvas>
                     </div>
-                    <div class="col-sm-9">
-                        <canvas id="chart2" height="40"></canvas>
+                    <div class="col-sm-10">
+                        <canvas id="chart2" height="40px"></canvas>
                     </div>
-                    <div class="col-sm-9">
+                    <div class="col-sm-10">
                         <div id="slider1"></div>
                     </div>
                 </div>
@@ -223,7 +233,8 @@ try {
 
     //chart用データの取得
     <?php       
-        try {
+    $device = '75B58B'; // テスト用
+    try {
             $db = new PDO($dsn, $user, $password);
             $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
             $stmt = $db->prepare("
@@ -237,7 +248,8 @@ try {
                 , m.sub_description
                 , m.lat
                 , m.long
-                , m.normally
+                , m.reference_line
+                , m.normally_level        
                 , m.attention_level
                 , m.alert_level
                 , m.picture 
@@ -245,11 +257,13 @@ try {
                 sigfox_db t 
                 left join sigfox_device m 
                     on t.device = m.device 
+            where
+                t.device = :device 
             order by
                 t.device
                 , t.create_time");
 
-            //$stmt->bindParam(':device', $device, PDO::PARAM_INT);
+            $stmt->bindParam(':device', $device, PDO::PARAM_INT);
             $stmt->execute();
             $data1 = array();
             $count = $stmt->rowCount();
@@ -265,19 +279,19 @@ try {
         }
         ?>
 
-    // グラフ(左)のラベル
-    const label1 = device + ':水位計';
-    // グラフ(右)のラベル
+    // グラフ(左～)のラベル
+    const label1 = '水位計';
     const label2 = '温度計';
-
-    const label3 = '注意レベル';
-    const label4 = '警報レベル';
+    const label3 = '平常値';
+    const label4 = '注意値';
+    const label5 = '警報値';
 
     // グラフのデータ
     let data1 = [];
     let data2 = [];
     let data3 = [];
     let data4 = [];
+    let data5 = [];
 
     <?php
         foreach ($data1 as $row) {
@@ -287,10 +301,13 @@ try {
             echo "data2.push('" . $row['temp'] . "');";
         }
         foreach ($data1 as $row) {
-            echo "data3.push('" . $row['attention_level'] . "');";
+            echo "data3.push('" . $row['normally_level'] . "');";
         }
         foreach ($data1 as $row) {
-            echo "data4.push('" . $row['alert_level'] . "');";
+            echo "data4.push('" . $row['attention_level'] . "');";
+        }
+        foreach ($data1 as $row) {
+            echo "data5.push('" . $row['alert_level'] . "');";
         }
         ?>
     </script>
@@ -302,6 +319,46 @@ try {
     </script>
 
     <script>
+    //googleMap用データの取得
+    <?php
+    try {
+        $db = new PDO($dsn, $user, $password);
+        $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+        $stmt = $db->prepare("
+        select
+            t.device
+            , t.temp
+            , t.volt
+            , t.distance
+            , max(t.create_time) as create_time
+            , m.description
+            , m.sub_description
+            , m.lat
+            , m.long
+            , m.reference_line
+            , m.normally_level
+            , m.attention_level
+            , m.alert_level
+            , m.picture 
+        from
+            sigfox_db t 
+            left join sigfox_device m 
+            on t.device = m.device
+        group by
+            t.device");
+
+        // $stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $data = array();
+        $count = $stmt->rowCount();
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $data[] = $row;
+        }
+    } catch (PDOException $e) {
+        die('エラー:' . $e->getMesssage());
+    }
+    ?>
+
     // device地点を設定
     var latlong = [
         <?php
@@ -319,7 +376,8 @@ try {
                 echo 'sub_description:"' . $row['sub_description'] . '",';
                 echo 'lat:"' . $row['lat'] . '",';
                 echo 'long:"' . $row['long'] . '",';
-                echo 'normally:' . $row['normally'] . ',';
+                echo 'reference_line:' . $row['reference_line'] . ',';
+                echo 'normally_level:' . $row['normally_level'] . ',';
                 echo 'attention_level:' . $row['attention_level'] . ',';
                 echo 'alert_level:' . $row['alert_level'] . ',';
                 echo 'picture:"' . $row['picture'] . '"';
@@ -333,6 +391,7 @@ try {
     ];
     </script>
 
+    <!-- <script src="js/markerwithlabel.js"></script> -->
     <script src="js/sgMapCode1.js"></script>
 
 </body>
