@@ -166,6 +166,33 @@ google.maps.event.addDomListener(window, 'load', function() {
             var infoWindow = new google.maps.InfoWindow();
             infoWindow.setContent(html);
             infoWindow.open(mapObj, markerObj);
+
+            console.log("!!!!!!!!!!!!!!!!!!!!");            
+            console.log(data5);
+
+            // チャート表示用データへセット
+            for (let index = 0; index < device.length; index++) {
+                if (device[index] = device_sel) {
+                    labels.push(labels_all[index]);
+                    data1.push(data1_all[index]);
+                    data2.push(data2_all[index]);
+                    data3.push(data3_all[index]);
+                    data4.push(data4_all[index]);
+                    data5.push(data5_all[index]);        
+                }
+            }
+
+            // データの再セット
+            chart_obj1.data.datasets[0].data = data1;
+            chart_obj1.data.datasets[1].data = data2;
+            chart_obj1.data.datasets[2].data = data3;
+            chart_obj1.data.datasets[3].data = data4;
+            chart_obj1.data.datasets[4].data = data5;
+            chart_obj1.data.labels = labels_rep;
+
+            chart_obj1.update();
+            chart_obj2.update();
+
         })
     });
 });

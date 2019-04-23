@@ -229,7 +229,9 @@ $password = '';
 
     <script>
     let labels = [];
-    let device = '75B58B';
+    let labels_all = [];
+    let device = [];
+    let device_sel = '75B58B';
 
     //chart用データの取得
     <?php       
@@ -275,7 +277,10 @@ $password = '';
         }
 
         foreach ($data1 as $row) {
-            echo "labels.push('" . $row['create_time'] . "');";
+            echo "labels_all.push('" . $row['create_time'] . "');";
+        }
+        foreach ($data1 as $row) {
+            echo "device.push('" . $row['device'] . "');";
         }
         ?>
 
@@ -293,23 +298,42 @@ $password = '';
     let data4 = [];
     let data5 = [];
 
+    let data1_all = [];
+    let data2_all = [];
+    let data3_all = [];
+    let data4_all = [];
+    let data5_all = [];
+
     <?php
         foreach ($data1 as $row) {
-            echo "data1.push('" . $row['distance'] . "');";
+            echo "data1_all.push('" . $row['distance'] . "');";
         }
         foreach ($data1 as $row) {
-            echo "data2.push('" . $row['temp'] . "');";
+            echo "data2_all.push('" . $row['temp'] . "');";
         }
         foreach ($data1 as $row) {
-            echo "data3.push('" . $row['normally_level'] . "');";
+            echo "data3_all.push('" . $row['normally_level'] . "');";
         }
         foreach ($data1 as $row) {
-            echo "data4.push('" . $row['attention_level'] . "');";
+            echo "data4_all.push('" . $row['attention_level'] . "');";
         }
         foreach ($data1 as $row) {
-            echo "data5.push('" . $row['alert_level'] . "');";
+            echo "data5_all.push('" . $row['alert_level'] . "');";
         }
-        ?>
+    ?>
+
+    // チャート表示用データへセット
+    for (let index = 0; index < device.length; index++) {
+        if (device[index] = device_sel) {
+            labels.push(labels_all[index]);
+            data1.push(data1_all[index]);
+            data2.push(data2_all[index]);
+            data3.push(data3_all[index]);
+            data4.push(data4_all[index]);
+            data5.push(data5_all[index]);        
+        }
+    }
+
     </script>
 
     <script src="js/sgChart1.js"></script>
