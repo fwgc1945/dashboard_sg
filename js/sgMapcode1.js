@@ -42,7 +42,7 @@ google.maps.event.addDomListener(window, 'load', function() {
             markerObj = new google.maps.Marker({
                 position: latlng,
                 map: mapObj,
-                // animation: google.maps.Animation.BOUNCE,    
+                animation: google.maps.Animation.DROP,    
                 icon: {url:"http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=|00ff00|",
                        scaledSize: new google.maps.Size(25, 40),
                 },    
@@ -64,7 +64,7 @@ google.maps.event.addDomListener(window, 'load', function() {
             markerObj = new google.maps.Marker({
                 position: latlng,
                 map: mapObj,
-                animation: google.maps.Animation.BOUNCE,    
+                animation: google.maps.Animation.DROP,    
                 icon: {url: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=|ffff00|",
                         scaledSize: new google.maps.Size(25, 40)
                 },    
@@ -85,7 +85,7 @@ google.maps.event.addDomListener(window, 'load', function() {
             markerObj = new google.maps.Marker({
                 position: latlng,
                 map: mapObj,
-                animation: google.maps.Animation.BOUNCE,    
+                animation: google.maps.Animation.DROP,    
                 icon: {url: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=|ff0000|",
                         scaledSize: new google.maps.Size(25, 40)
                 },    
@@ -155,7 +155,8 @@ google.maps.event.addDomListener(window, 'load', function() {
             html += '</style>';
             html += '<p><img src="images/' + picture + '" width= 100px alt=""></img>';
             // html += '<br><a href="chart-sigfox.php" target="_blank">' + ' ' + description + '</a>';
-            html += '<br><a href="chart-sigfox.php?device=75B58B">' + ' ' + description + '</a>';
+            // html += '<br><a href="chart-sigfox.php?device=75B58B">' + ' ' + description + '</a>';
+            html += '<br>' + description;
             html += '<br>' + subDescription;
             html += '<br>' + "最終更新日:" + create_time;
             html += '<br>' + "　平常時:" + normally_level;
@@ -167,10 +168,16 @@ google.maps.event.addDomListener(window, 'load', function() {
             infoWindow.setContent(html);
             infoWindow.open(mapObj, markerObj);
 
-            console.log("!!!!!!!!!!!!!!!!!!!!");            
-            console.log(data5);
+            // チャート表示用データの初期化
+            labels = [];
+            data1 = [];
+            data2 = [];
+            data3 = [];
+            data4 = [];
+            data5 = [];
 
-            // チャート表示用データへセット
+            console.log("labels",labels)
+            // データの選択
             for (let index = 0; index < device.length; index++) {
                 if (device[index] = device_sel) {
                     labels.push(labels_all[index]);
@@ -182,14 +189,34 @@ google.maps.event.addDomListener(window, 'load', function() {
                 }
             }
 
-            // データの再セット
-            chart_obj1.data.datasets[0].data = data1;
-            chart_obj1.data.datasets[1].data = data2;
-            chart_obj1.data.datasets[2].data = data3;
-            chart_obj1.data.datasets[3].data = data4;
-            chart_obj1.data.datasets[4].data = data5;
+            let vals = $("#slider1").slider("option", "values");
+            console.log(vals[0], vals[1]);
+
+            // 詳細グラフデータの再セット
+            let data1_rep = data1.slice(vals[0], vals[1] + 1);
+            chart_obj1.data.datasets[0].data = data1_rep;
+
+            let data2_rep = data2.slice(vals[0], vals[1] + 1);
+            chart_obj1.data.datasets[1].data = data2_rep;
+
+            let data3_rep = data3.slice(vals[0], vals[1] + 1);
+            chart_obj1.data.datasets[2].data = data3_rep;
+
+            let data4_rep = data4.slice(vals[0], vals[1] + 1);
+            chart_obj1.data.datasets[3].data = data4_rep;
+
+            let data5_rep = data5.slice(vals[0], vals[1] + 1);
+            chart_obj1.data.datasets[4].data = data5_rep;
+
+            let labels_rep = labels.slice(vals[0], vals[1] + 1);
             chart_obj1.data.labels = labels_rep;
 
+            // 全体グラフデータの再セット
+            chart_obj2.data.datasets[0].data = data1;
+            chart_obj2.data.datasets[1].data = data2;
+            chart_obj2.data.labels = labels;
+
+            // グラフ再表示
             chart_obj1.update();
             chart_obj2.update();
 

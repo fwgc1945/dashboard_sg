@@ -110,7 +110,7 @@ $password = '';
                         <li class="nav-item">
                             <a class="nav-link active" href="#">
                                 <span data-feather="home"></span>
-                                ダッシュボード <span class="sr-only">(現位置)</span>
+                                水位計ダッシュボード <span class="sr-only">(現位置)</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -200,10 +200,10 @@ $password = '';
                         ?>
                     </ul> -->
 
-                    <div id="map" style="height:500px" class="col-sm-10">> </div>
+                    <div id="map" style="height:300px" class="col-sm-10">> </div>
 
                     <div class="col-sm-10">
-                        <canvas id="chart1" height="160px"></canvas>
+                        <canvas id="chart1" height="80px"></canvas>
                     </div>
                     <div class="col-sm-10">
                         <canvas id="chart2" height="40px"></canvas>
@@ -259,8 +259,8 @@ $password = '';
                 sigfox_db t 
                 left join sigfox_device m 
                     on t.device = m.device 
-            where
-                t.device = :device 
+            -- where
+            --     t.device = :device 
             order by
                 t.device
                 , t.create_time");
@@ -276,13 +276,14 @@ $password = '';
             die('エラー:' . $e->getMesssage());
         }
 
+        // グラフの横軸ラベル
         foreach ($data1 as $row) {
             echo "labels_all.push('" . $row['create_time'] . "');";
         }
         foreach ($data1 as $row) {
             echo "device.push('" . $row['device'] . "');";
         }
-        ?>
+    ?>
 
     // グラフ(左～)のラベル
     const label1 = '水位計';
@@ -330,10 +331,9 @@ $password = '';
             data2.push(data2_all[index]);
             data3.push(data3_all[index]);
             data4.push(data4_all[index]);
-            data5.push(data5_all[index]);        
+            data5.push(data5_all[index]);
         }
     }
-
     </script>
 
     <script src="js/sgChart1.js"></script>
