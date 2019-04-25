@@ -231,6 +231,7 @@ $password = '';
     let labels = [];
     let labels_all = [];
     let device = [];
+    let _device = [];
     let device_sel = '75B58B';
 
     //chart用データの取得
@@ -265,7 +266,7 @@ $password = '';
                 t.device
                 , t.create_time");
 
-            $stmt->bindParam(':device', $device, PDO::PARAM_INT);
+            // $stmt->bindParam(':device', $device, PDO::PARAM_INT);
             $stmt->execute();
             $data1 = array();
             $count = $stmt->rowCount();
@@ -280,6 +281,7 @@ $password = '';
         foreach ($data1 as $row) {
             echo "labels_all.push('" . $row['create_time'] . "');";
         }
+
         foreach ($data1 as $row) {
             echo "device.push('" . $row['device'] . "');";
         }
@@ -325,7 +327,7 @@ $password = '';
 
     // チャート表示用データへセット
     for (let index = 0; index < device.length; index++) {
-        if (device[index] = device_sel) {
+        if (device[index] == device_sel) {
             labels.push(labels_all[index]);
             data1.push(data1_all[index]);
             data2.push(data2_all[index]);
@@ -334,6 +336,9 @@ $password = '';
             data5.push(data5_all[index]);
         }
     }
+
+    // console.log("device",device);
+
     </script>
 
     <script src="js/sgChart1.js"></script>
