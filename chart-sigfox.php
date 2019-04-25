@@ -113,12 +113,12 @@ $password = '';
                                 水位計ダッシュボード <span class="sr-only">(現位置)</span>
                             </a>
                         </li>
-                        <li class="nav-item">
+                        <!-- <li class="nav-item">
                             <a class="nav-link" href="#">
                                 <span data-feather="bar-chart-2"></span>
                                 棒グラフ
                             </a>
-                        </li>
+                        </li> -->
                         <li class="nav-item">
                             <a class="nav-link" href="#">
                                 <span data-feather="activity"></span>
@@ -130,37 +130,38 @@ $password = '';
                     <h6
                         class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
                         <span>対象データ</span>
+                        <!-- <h6>対象データ</h6> -->
                         <!-- <a class="d-flex align-items-center text-muted" href="#">
                             <span data-feather="plus-circle"></span>
                         </a> -->
                     </h6>
                     <ul class="nav flex-column mb-2">
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="chart-sigfox.php?select=latest">
                                 <span data-feather="file-text"></span>
                                 最新（7日間）
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="chart-sigfox.php?select=thisMonth">
                                 <span data-feather="file-text"></span>
                                 当月
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="chart-sigfox.php?select=lastMonth">
                                 <span data-feather="file-text"></span>
                                 前月
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="chart-sigfox.php?select=thisYear">
                                 <span data-feather="file-text"></span>
                                 当年
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="#">
+                            <a class="nav-link" href="chart-sigfox.php?select=lastYear">
                                 <span data-feather="file-text"></span>
                                 前年
                             </a>
@@ -203,7 +204,7 @@ $password = '';
                     <div id="map" style="height:300px" class="col-sm-11">> </div>
 
                     <div class="col-sm-12">
-                        <h4 class="device-description" > 設置場所説明 </h4>
+                        <h4 class="device-description"> 設置場所説明 </h4>
                     </div>
                     <div class="col-sm-11">
                         <canvas id="chart1" height="80px"></canvas>
@@ -234,15 +235,20 @@ $password = '';
     let labels = [];
     let labels_all = [];
     let device = [];
-    let _device = [];
     let device_sel = '75B58B';
 
     //chart用データの取得
-    <?php       
-    // $device = '75B58B'; // テスト用
+    <?php
+    $select = $_GET['select'];
+    if (isset($select)) {
+        $select = 'latest';
+    }
     try {
-            $db = new PDO($dsn, $user, $password);
-            $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+        $db = new PDO($dsn, $user, $password);
+        $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+
+        // 最新7日
+        if ($select == 'latest') {
             $stmt = $db->prepare("
             select
                 t.device
@@ -263,19 +269,63 @@ $password = '';
                 sigfox_db t 
                 left join sigfox_device m 
                     on t.device = m.device 
-            -- where
-            --     t.device = :device 
+            where
+                DATE_FORMAT(t.create_time, '%Y%m%d') >= :date_sel 
             order by
                 t.device
                 , t.create_time");
 
-            // $stmt->bindParam(':device', $device, PDO::PARAM_INT);
-            $stmt->execute();
-            $data1 = array();
-            $count = $stmt->rowCount();
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $data1[] = $row;
-            }
+        $date_sel = date("Ymd",strtotime("-7 day"));
+        $stmt->bindParam(':date_sel', $date_sel, PDO::PARAM_INT);
+
+        // 当月
+        } elseif ($select == 'thisMonth') {
+
+        // 前月
+        } elseif ($select == 'lastMonth') {
+
+        // 当年
+        } elseif ($select == 'thisYear') {
+
+        // 前年
+        } elseif ($select == 'lastYear') {
+
+        };
+
+        // $stmt = $db->prepare("
+        // select
+        //     t.device
+        //     , t.temp
+        //     , t.volt
+        //     , t.distance
+        //     , t.create_time
+        //     , m.description
+        //     , m.sub_description
+        //     , m.lat
+        //     , m.long
+        //     , m.reference_line
+        //     , m.normally_level        
+        //     , m.attention_level
+        //     , m.alert_level
+        //     , m.picture 
+        // from
+        //     sigfox_db t 
+        //     left join sigfox_device m 
+        //         on t.device = m.device 
+        // -- where
+        // --     t.device = :device 
+        // order by
+        //     t.device
+        //     , t.create_time");
+
+
+        // $stmt->bindParam(':device', $device, PDO::PARAM_INT);
+        $stmt->execute();
+        $data1 = array();
+        $count = $stmt->rowCount();
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $data1[] = $row;
+        }
         } catch (PDOException $e) {
             die('エラー:' . $e->getMesssage());
         }
@@ -341,7 +391,6 @@ $password = '';
     }
 
     // console.log("device",device);
-
     </script>
 
     <script src="js/sgChart1.js"></script>
