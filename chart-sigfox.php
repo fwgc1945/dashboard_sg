@@ -200,15 +200,18 @@ $password = '';
                         ?>
                     </ul> -->
 
-                    <div id="map" style="height:300px" class="col-sm-10">> </div>
+                    <div id="map" style="height:300px" class="col-sm-11">> </div>
 
-                    <div class="col-sm-10">
+                    <div class="col-sm-12">
+                        <h4 class="device-description" > 設置場所説明 </h4>
+                    </div>
+                    <div class="col-sm-11">
                         <canvas id="chart1" height="80px"></canvas>
                     </div>
-                    <div class="col-sm-10">
+                    <div class="col-sm-11">
                         <canvas id="chart2" height="40px"></canvas>
                     </div>
-                    <div class="col-sm-10">
+                    <div class="col-sm-11">
                         <div id="slider1"></div>
                     </div>
                 </div>
@@ -236,7 +239,7 @@ $password = '';
 
     //chart用データの取得
     <?php       
-    $device = '75B58B'; // テスト用
+    // $device = '75B58B'; // テスト用
     try {
             $db = new PDO($dsn, $user, $password);
             $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
