@@ -177,10 +177,17 @@ google.maps.event.addDomListener(window, 'load', function() {
                     data3.push(data3_all[index]);
                     data4.push(data4_all[index]);
                     data5.push(data5_all[index]);        
+
+                    device_description = (device_description_all[index]);
                 }
             }
             let max = data1.length;
             let vals = [data1.length - 10, data1.length];
+
+            // 正しく動作しない　調査中！！！！！！！！！！！！！！
+            $(function() {
+                $('#device-description').replaceWith('<h4 id="device-description">' + device_description + '</h4>');
+            });        
 
             $("#slider1").slider({
                 max: max, //最大値

@@ -195,8 +195,10 @@
                         <div class="btn-group mr-2">
                             <!-- <button type="button" class="btn btn-sm btn-outline-secondary">　活動タグ MAP　</button>
                             <button type="button" class="btn btn-sm btn-outline-secondary">　活動タグ 一覧　</button> -->
-                            <button type="button" id="sensor-map" class="btn btn-sm btn-outline-secondary">　水位センサー MAP　</button>
-                            <button type="button" id="sensor-list" class="btn btn-sm btn-outline-secondary">　水位センサー 一覧　</button>
+                            <button type="button" id="sensor-map" class="btn btn-sm btn-outline-secondary">　水位センサー
+                                MAP　</button>
+                            <button type="button" id="sensor-list" class="btn btn-sm btn-outline-secondary">　水位センサー
+                                一覧　</button>
                         </div>
 
                         <!-- <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
@@ -237,7 +239,7 @@
                     <div id="map" style="height:300px" class="col-sm-11">> </div>
 
                     <div class="col-sm-12">
-                        <h4 class="device-description"> 設置場所説明 </h4>
+                        <h4 id="device-description"> 設置場所説明 </h4>
                     </div>
                     <div class="col-sm-11">
                         <canvas id="chart1" height="80px"></canvas>
@@ -275,6 +277,12 @@
             $('.sensor-list').fadeIn();
         });
     })
+
+    // let device_description = 'あああああああ';
+
+    // $(function() {
+    //     $('#device-description').replaceWith('<h4 id="device-description">' + device_description + '</h4>');
+    // });
     </script>
 
     <script>
@@ -493,6 +501,9 @@
     let data4_all = [];
     let data5_all = [];
 
+    let device_description_all = [];
+    let device_description = '';
+
     <?php
         foreach ($data1 as $row) {
             echo "data1_all.push('" . $row['distance'] . "');";
@@ -509,6 +520,9 @@
         foreach ($data1 as $row) {
             echo "data5_all.push('" . $row['alert_level'] . "');";
         }
+        foreach ($data1 as $row) {
+            echo "device_description_all.push('" . $row['description'] ."　". $row['sub_description'] ."');";
+        }
     ?>
 
     // チャート表示用データへセット
@@ -520,10 +534,16 @@
             data3.push(data3_all[index]);
             data4.push(data4_all[index]);
             data5.push(data5_all[index]);
+
+            device_description = (device_description_all[index]);
         }
     }
 
-    // console.log("device",device);
+    // console.log("device",device);s
+
+    $(function() {
+        $('#device-description').replaceWith('<h4 id="device-description">' + device_description + '</h4>');
+    });
     </script>
 
     <script src="js/sgChart1.js"></script>
