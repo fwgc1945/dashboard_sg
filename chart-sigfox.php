@@ -1,69 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
 
-<?php
-// $course_id = $_GET['course_id'];
-// echo $course_id;
-
-$dsn = 'mysql:host=localhost;dbname=fwgc1945_densin;charset=utf8';
-$user = 'root';
-$password = '';
-
-//googleMap用データの取得
-// try {
-//     $db = new PDO($dsn, $user, $password);
-//     $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-//     $stmt = $db->prepare("
-//     select
-//         t.device
-//         , t.temp
-//         , t.volt
-//         , t.distance
-//         , max(t.create_time) as create_time
-//         , m.description
-//         , m.sub_description
-//         , m.lat
-//         , m.long
-//         , m.reference_line
-//         , m.normally_level
-//         , m.attention_level
-//         , m.alert_level
-//         , m.picture 
-//     from
-//         sigfox_db t 
-//         left join sigfox_device m 
-//         on t.device = m.device
-//     group by
-//         t.device");
-
-//     // $stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
-//     $stmt->execute();
-//     $data = array();
-//     $count = $stmt->rowCount();
-//     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-//         $data[] = $row;
-//     }
-// } catch (PDOException $e) {
-//     die('エラー:' . $e->getMesssage());
-// }
-
-//chart用データの取得
-// try {
-//     $db = new PDO($dsn, $user, $password);
-//     $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-//     $stmt = $db->prepare("select distinct detected_node from skeed_oz where sensors_value <> '' order by detected_node, time");
-//     // $stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
-//     $stmt->execute();
-//     $data2 = array();
-//     $count = $stmt->rowCount();
-//     while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-//         $data2[] = $row;
-//     }
-// } catch (PDOException $e) {
-//     die('エラー:' . $e->getMesssage());
-// }
-// ?>
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -76,7 +13,7 @@ $password = '';
     <script src="http://maps.google.com/maps/api/js?v=3&sensor=false&key=AIzaSyBr21j2fw7PjrfdQyGU_4WFLZNqWWACmMo"
         type="text/javascript" charset="UTF-8"></script>
 
-    markerwithlabel/src/markerwithlabel.js
+    <script src="js/markerwithlabel.js"> </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
 
@@ -92,6 +29,85 @@ $password = '';
 </head>
 
 <body>
+
+    <?php
+    $dsn = 'mysql:host=localhost;dbname=fwgc1945_densin;charset=utf8';
+    $user = 'root';
+    $password = '';
+?>
+    <script>
+    //googleMap用データの取得
+    <?php
+    try {
+        $db = new PDO($dsn, $user, $password);
+        $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+        $stmt = $db->prepare("
+        select
+            t.device
+            , t.temp
+            , t.volt
+            , t.distance
+            , max(t.create_time) as create_time
+            , m.description
+            , m.sub_description
+            , m.lat
+            , m.long
+            , m.reference_line
+            , m.normally_level
+            , m.attention_level
+            , m.alert_level
+            , m.picture 
+        from
+            sigfox_db t 
+            left join sigfox_device m 
+            on t.device = m.device
+        group by
+            t.device");
+
+        // $stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
+        $stmt->execute();
+        $data = array();
+        $count = $stmt->rowCount();
+        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $data[] = $row;
+        }
+    } catch (PDOException $e) {
+        die('エラー:' . $e->getMesssage());
+    }
+    ?>
+
+    // device地点を設定
+    var latlong = [
+        <?php
+            $count = count($data);
+            $i = 0;
+            foreach ($data as $row) {
+                $i++;
+                echo '{';
+                echo 'device:"' . $row['device'] . '",';
+                echo 'temp:' . $row['temp'] . ',';
+                echo 'volt:' . $row['volt'] . ',';
+                echo 'distance:' . $row['distance'] . ',';
+                echo 'create_time:"' . $row['create_time'] . '",';
+                echo 'description:"' . $row['description'] . '",';
+                echo 'sub_description:"' . $row['sub_description'] . '",';
+                echo 'lat:"' . $row['lat'] . '",';
+                echo 'long:"' . $row['long'] . '",';
+                echo 'reference_line:' . $row['reference_line'] . ',';
+                echo 'normally_level:' . $row['normally_level'] . ',';
+                echo 'attention_level:' . $row['attention_level'] . ',';
+                echo 'alert_level:' . $row['alert_level'] . ',';
+                echo 'picture:"' . $row['picture'] . '"';
+                if ($i == $count) {
+                    echo '}';
+                } else {
+                    echo '},';
+                }
+            }
+            ?>
+    ];
+    </script>
+
     <nav class="navbar navbar-dark fixed-top bg-dark flex-md-nowrap p-0 shadow">
         <a class="navbar-brand col-sm-3 col-md-2 mr-0" href="#">ユーザー名</a>
         <input class="form-control form-control-dark w-100" type="text" placeholder="検索" aria-label="検索">
@@ -173,14 +189,14 @@ $password = '';
             <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
                 <div
                     class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-                    <h1 class="h2">センサー MAP</h1>
+                    <h1 class="h1"></h1>
                     <div class="btn-toolbar mb-2 mb-md-0">
 
                         <div class="btn-group mr-2">
                             <!-- <button type="button" class="btn btn-sm btn-outline-secondary">　活動タグ MAP　</button>
                             <button type="button" class="btn btn-sm btn-outline-secondary">　活動タグ 一覧　</button> -->
-                            <button type="button" class="btn btn-sm btn-outline-secondary">　水位センサー MAP　</button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">　水位センサー 一覧　</button>
+                            <button type="button" id="sensor-map" class="btn btn-sm btn-outline-secondary">　水位センサー MAP　</button>
+                            <button type="button" id="sensor-list" class="btn btn-sm btn-outline-secondary">　水位センサー 一覧　</button>
                         </div>
 
                         <!-- <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle">
@@ -190,17 +206,34 @@ $password = '';
                     </div>
                 </div>
 
-                <div class="row">
-
-                    <!-- <ul>
-                        <h3>node</h3>
+                <div class="container sensor-list">
+                    <h1 class="h2">センサー 一覧</h1>
+                    <div class="row">
                         <?php
-                        foreach ($data2 as $row) {
-                            echo '<li>' . $row['detected_node'] . '</li>';
+                        foreach ($data as $row) {
+                            echo '<div class="col-sm-3 sensor-frame">';
+                            $waterLevel = $row['reference_line'] - $row['distance'];
+
+                            echo '<h5>' . $waterLevel . 'cm</h5>';
+                            echo '<h5 class="h5">' . $row['description'] . '<br>' . $row['sub_description'] . '</h5>';
+                            echo '<dl>';                            
+                            echo '<dt>最終更新日</dt>';
+                            echo '<dd>' . $row['create_time'] . '</dd>';
+                            echo '<dt>平常時</dt>';
+                            echo '<dd>' . $row['normally_level'] . ' cm</dd>';
+                            echo '<dt>注意レベル</dt>';
+                            echo '<dd>' . $row['attention_level'] . ' cm</dd>';
+                            echo '<dt>警報レベル</dt>';
+                            echo '<dd>' . $row['alert_level'] . ' cm</dd>';
+                            echo '</dl>';                           
+                            echo '</div>';
                         }
                         ?>
-                    </ul> -->
+                    </div>
+                </div>
 
+                <h1 class="h2">センサー MAP</h1>
+                <div class="row">
                     <div id="map" style="height:300px" class="col-sm-11">> </div>
 
                     <div class="col-sm-12">
@@ -232,17 +265,33 @@ $password = '';
     </div>
 
     <script>
+    $(function() {
+        $('#sensor-map').click(function() {
+            $('.sensor-list').fadeOut();
+        });
+    })
+    $(function() {
+        $('#sensor-list').click(function() {
+            $('.sensor-list').fadeIn();
+        });
+    })
+    </script>
+
+    <script>
     let labels = [];
     let labels_all = [];
     let device = [];
+
+    // 初期表示用
     let device_sel = '75B58B';
 
     //chart用データの取得
     <?php
     $select = $_GET['select'];
-    if (isset($select)) {
+    if (!isset($select)) {
         $select = 'latest';
     }
+
     try {
         $db = new PDO($dsn, $user, $password);
         $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
@@ -280,46 +329,130 @@ $password = '';
 
         // 当月
         } elseif ($select == 'thisMonth') {
+            $stmt = $db->prepare("
+            select
+                t.device
+                , t.temp
+                , t.volt
+                , t.distance
+                , t.create_time
+                , m.description
+                , m.sub_description
+                , m.lat
+                , m.long
+                , m.reference_line
+                , m.normally_level        
+                , m.attention_level
+                , m.alert_level
+                , m.picture 
+            from
+                sigfox_db t 
+                left join sigfox_device m 
+                    on t.device = m.device 
+            where
+                DATE_FORMAT(t.create_time, '%Y%m') = :date_sel 
+            order by
+                t.device
+                , t.create_time");
+
+            $date_sel = date("Ym");
+            $stmt->bindParam(':date_sel', $date_sel, PDO::PARAM_INT);
 
         // 前月
         } elseif ($select == 'lastMonth') {
+            $stmt = $db->prepare("
+            select
+                t.device
+                , t.temp
+                , t.volt
+                , t.distance
+                , t.create_time
+                , m.description
+                , m.sub_description
+                , m.lat
+                , m.long
+                , m.reference_line
+                , m.normally_level
+                , m.attention_level
+                , m.alert_level
+                , m.picture 
+            from
+                sigfox_db t 
+                left join sigfox_device m 
+                    on t.device = m.device 
+            where
+                DATE_FORMAT(t.create_time, '%Y%m') = :date_sel 
+            order by
+                t.device
+                , t.create_time");
+
+            $date_sel = date("Ym",strtotime("-1 month"));
+            $stmt->bindParam(':date_sel', $date_sel, PDO::PARAM_INT);
 
         // 当年
         } elseif ($select == 'thisYear') {
+            $stmt = $db->prepare("
+            select
+                t.device
+                , t.temp
+                , t.volt
+                , t.distance
+                , t.create_time
+                , m.description
+                , m.sub_description
+                , m.lat
+                , m.long
+                , m.reference_line
+                , m.normally_level        
+                , m.attention_level
+                , m.alert_level
+                , m.picture 
+            from
+                sigfox_db t 
+                left join sigfox_device m 
+                    on t.device = m.device 
+            where
+                DATE_FORMAT(t.create_time, '%Y') = :date_sel 
+            order by
+                t.device
+                , t.create_time");
+
+            $date_sel = date("Y");
+            $stmt->bindParam(':date_sel', $date_sel, PDO::PARAM_INT);
 
         // 前年
         } elseif ($select == 'lastYear') {
+            $stmt = $db->prepare("
+            select
+                t.device
+                , t.temp
+                , t.volt
+                , t.distance
+                , t.create_time
+                , m.description
+                , m.sub_description
+                , m.lat
+                , m.long
+                , m.reference_line
+                , m.normally_level        
+                , m.attention_level
+                , m.alert_level
+                , m.picture 
+            from
+                sigfox_db t 
+                left join sigfox_device m 
+                    on t.device = m.device 
+            where
+                DATE_FORMAT(t.create_time, '%Y') = :date_sel 
+            order by
+                t.device
+                , t.create_time");
+
+            $date_sel = date("Y",strtotime("-1 year"));
+            $stmt->bindParam(':date_sel', $date_sel, PDO::PARAM_INT);
 
         };
 
-        // $stmt = $db->prepare("
-        // select
-        //     t.device
-        //     , t.temp
-        //     , t.volt
-        //     , t.distance
-        //     , t.create_time
-        //     , m.description
-        //     , m.sub_description
-        //     , m.lat
-        //     , m.long
-        //     , m.reference_line
-        //     , m.normally_level        
-        //     , m.attention_level
-        //     , m.alert_level
-        //     , m.picture 
-        // from
-        //     sigfox_db t 
-        //     left join sigfox_device m 
-        //         on t.device = m.device 
-        // -- where
-        // --     t.device = :device 
-        // order by
-        //     t.device
-        //     , t.create_time");
-
-
-        // $stmt->bindParam(':device', $device, PDO::PARAM_INT);
         $stmt->execute();
         $data1 = array();
         $count = $stmt->rowCount();
@@ -399,7 +532,7 @@ $password = '';
     feather.replace()
     </script>
 
-    <script>
+    <!-- <script>
     //googleMap用データの取得
     <?php
     try {
@@ -470,7 +603,7 @@ $password = '';
             }
             ?>
     ];
-    </script>
+    </script> -->
 
     <!-- <script src="js/markerwithlabel.js"></script> -->
     <script src="js/sgMapCode1.js"></script>

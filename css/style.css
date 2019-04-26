@@ -15,6 +15,12 @@ h1{
   margin: 0;   
 }
 
+h5{
+  font-size: 60px;
+  font-weight: bold;
+  margin: 0;   
+}
+
 span{
   font-size: 16px;
   margin: 0;
@@ -125,6 +131,21 @@ body {
     }
   }
   
+  .sensor-frame{
+    background-color: rgba(151, 188, 243, 0.25);
+    margin: 5px;
+  }
+
+  .sensor-list{
+    position:  absolute;        /* 要素の配置方法を指定 */
+    background-color: #eee;   /* 背景色指定 */
+    padding:  20px;             /* 余白指定 */
+    left:  10px;                /* 左からの位置指定 */
+    top: 110px;                 /* 上からの位置指定 */
+    z-index: 10;
+    display: none               /* 非表示 */  
+  }
+
   /*
    * ナビゲーションバー
    */
