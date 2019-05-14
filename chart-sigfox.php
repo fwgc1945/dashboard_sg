@@ -13,7 +13,7 @@
     <script src="http://maps.google.com/maps/api/js?v=3&sensor=false&key=AIzaSyBr21j2fw7PjrfdQyGU_4WFLZNqWWACmMo"
         type="text/javascript" charset="UTF-8"></script>
 
-    <script src="js/markerwithlabel.js"> </script>
+    <!-- <script src="js/markerwithlabel.js"> </script> -->
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
 
@@ -34,6 +34,11 @@
     $dsn = 'mysql:host=localhost;dbname=fwgc1945_densin;charset=utf8';
     $user = 'root';
     $password = '';
+
+    $dsn = 'mysql:host=mysql1013.db.sakura.ne.jp;dbname=fwgc1945_densin;charset=utf8';
+    $user = 'fwgc1945';
+    $password = 'f3VWcbpbvrqdMaE';
+
 ?>
     <script>
     //googleMap用データの取得
@@ -44,25 +49,26 @@
         $stmt = $db->prepare("
         select
             t.device
-            , t.temp
-            , t.volt
-            , t.distance
+            , max(t.temp) as temp
+            , max(t.volt) as volt
+            , max(t.distance) as distance
             , max(t.create_time) as create_time
-            , m.description
-            , m.sub_description
-            , m.lat
-            , m.long
-            , m.reference_line
-            , m.normally_level
-            , m.attention_level
-            , m.alert_level
-            , m.picture 
+            , max(m.description) as description
+            , max(m.sub_description) as sub_description
+            , max(m.lat) as lat
+            , max(m.long) as _long
+            , max(m.reference_line) as reference_line
+            , max(m.normally_level) as normally_level
+            , max(m.attention_level) as attention_level
+            , max(m.alert_level) as alert_level
+            , max(m.picture) as picture
         from
             sigfox_db t 
             left join sigfox_device m 
             on t.device = m.device
         group by
-            t.device");
+            t.device
+        ");
 
         // $stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
         $stmt->execute();
@@ -92,7 +98,7 @@
                 echo 'description:"' . $row['description'] . '",';
                 echo 'sub_description:"' . $row['sub_description'] . '",';
                 echo 'lat:"' . $row['lat'] . '",';
-                echo 'long:"' . $row['long'] . '",';
+                echo 'long:"' . $row['_long'] . '",';
                 echo 'reference_line:' . $row['reference_line'] . ',';
                 echo 'normally_level:' . $row['normally_level'] . ',';
                 echo 'attention_level:' . $row['attention_level'] . ',';
@@ -239,8 +245,8 @@
 
                 <h1 class="h2">センサー MAP</h1>
                 <div class="row">
-                <!-- <div id="map" style="height:360px;margin-bottom: 20px;" class="col-sm-11">> </div> -->
-                    <div id="map" class="col-sm-11">> </div>
+                    <div id="map" style="height:360px;margin-bottom: 20px;" class="col-sm-11">> </div>
+                    <!-- <div id="map" class="col-sm-11">> </div> -->
 
                     <div class="col-sm-12">
                         <h4 id="device-description"> 設置場所説明 </h4>
@@ -563,81 +569,8 @@
     feather.replace()
     </script>
 
-    <!-- <script>
-    //googleMap用データの取得
-    <?php
-    try {
-        $db = new PDO($dsn, $user, $password);
-        $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
-        $stmt = $db->prepare("
-        select
-            t.device
-            , t.temp
-            , t.volt
-            , t.distance
-            , max(t.create_time) as create_time
-            , m.description
-            , m.sub_description
-            , m.lat
-            , m.long
-            , m.reference_line
-            , m.normally_level
-            , m.attention_level
-            , m.alert_level
-            , m.picture 
-        from
-            sigfox_db t 
-            left join sigfox_device m 
-            on t.device = m.device
-        group by
-            t.device");
-
-        // $stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
-        $stmt->execute();
-        $data = array();
-        $count = $stmt->rowCount();
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $data[] = $row;
-        }
-    } catch (PDOException $e) {
-        die('エラー:' . $e->getMesssage());
-    }
-    ?>
-
-    // device地点を設定
-    var latlong = [
-        <?php
-            $count = count($data);
-            $i = 0;
-            foreach ($data as $row) {
-                $i++;
-                echo '{';
-                echo 'device:"' . $row['device'] . '",';
-                echo 'temp:' . $row['temp'] . ',';
-                echo 'volt:' . $row['volt'] . ',';
-                echo 'distance:' . $row['distance'] . ',';
-                echo 'create_time:"' . $row['create_time'] . '",';
-                echo 'description:"' . $row['description'] . '",';
-                echo 'sub_description:"' . $row['sub_description'] . '",';
-                echo 'lat:"' . $row['lat'] . '",';
-                echo 'long:"' . $row['long'] . '",';
-                echo 'reference_line:' . $row['reference_line'] . ',';
-                echo 'normally_level:' . $row['normally_level'] . ',';
-                echo 'attention_level:' . $row['attention_level'] . ',';
-                echo 'alert_level:' . $row['alert_level'] . ',';
-                echo 'picture:"' . $row['picture'] . '"';
-                if ($i == $count) {
-                    echo '}';
-                } else {
-                    echo '},';
-                }
-            }
-            ?>
-    ];
-    </script> -->
-
     <!-- <script src="js/markerwithlabel.js"></script> -->
-    <script src="js/sgMapCode1.js"></script>
+    <script src="js/sgMapcode1.js"></script>
 
 </body>
 
