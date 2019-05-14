@@ -213,7 +213,10 @@
                     <div class="row">
                         <?php
                         foreach ($data as $row) {
-                            echo '<div class="col-sm-3 sensor-frame">';
+                            // echo '<div class="col-sm-3 sensor-frame' . ' divice-name' .'">';
+                            //echo '<div class="col-sm-3 sensor-frame">';
+                            echo '<div id="device-' . $row['device'] . '" class="col-sm-3 sensor-frame">';
+                            
                             $waterLevel = $row['reference_line'] - $row['distance'];
 
                             echo '<h5>' . $waterLevel . 'cm</h5>';
@@ -236,16 +239,17 @@
 
                 <h1 class="h2">センサー MAP</h1>
                 <div class="row">
-                    <div id="map" style="height:300px" class="col-sm-11">> </div>
+                <!-- <div id="map" style="height:360px;margin-bottom: 20px;" class="col-sm-11">> </div> -->
+                    <div id="map" class="col-sm-11">> </div>
 
                     <div class="col-sm-12">
                         <h4 id="device-description"> 設置場所説明 </h4>
                     </div>
                     <div class="col-sm-11">
-                        <canvas id="chart1" height="80px"></canvas>
+                        <canvas id="chart1" height="60px"></canvas>
                     </div>
                     <div class="col-sm-11">
-                        <canvas id="chart2" height="40px"></canvas>
+                        <canvas id="chart2" height="30px"></canvas>
                     </div>
                     <div class="col-sm-11">
                         <div id="slider1"></div>
@@ -278,14 +282,21 @@
         });
     })
 
-    // let device_description = 'あああああああ';
+    //センサー一覧のクリックイベント設定    
+    <?php
+    foreach ($data as $row) {
+        echo "var clickElement = document.getElementById('device-" . $row['device']. "');";
+        echo "clickElement.addEventListener('click', function(event) {";
+        //クリック時のイベントを記述
+        echo "device_sel = '". $row['device'] ."';";
+        
+        // チャート表示内容再設定
+        echo "chartReplace(device_sel);";
+        
+        echo "},false);";
+    }
+    ?>
 
-    // $(function() {
-    //     $('#device-description').replaceWith('<h4 id="device-description">' + device_description + '</h4>');
-    // });
-    </script>
-
-    <script>
     let labels = [];
     let labels_all = [];
     let device = [];
