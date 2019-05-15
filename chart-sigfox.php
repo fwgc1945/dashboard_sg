@@ -35,9 +35,9 @@
     $user = 'root';
     $password = '';
 
-    $dsn = 'mysql:host=mysql1013.db.sakura.ne.jp;dbname=fwgc1945_densin;charset=utf8';
-    $user = 'fwgc1945';
-    $password = 'f3VWcbpbvrqdMaE';
+    // $dsn = 'mysql:host=mysql1013.db.sakura.ne.jp;dbname=fwgc1945_densin;charset=utf8';
+    // $user = 'fwgc1945';
+    // $password = 'f3VWcbpbvrqdMaE';
 
 ?>
     <script>
@@ -47,27 +47,27 @@
         $db = new PDO($dsn, $user, $password);
         $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
         $stmt = $db->prepare("
-        select
+            select
             t.device
-            , max(t.temp) as temp
-            , max(t.volt) as volt
-            , max(t.distance) as distance
-            , max(t.create_time) as create_time
-            , max(m.description) as description
-            , max(m.sub_description) as sub_description
-            , max(m.lat) as lat
-            , max(m.long) as _long
-            , max(m.reference_line) as reference_line
-            , max(m.normally_level) as normally_level
-            , max(m.attention_level) as attention_level
-            , max(m.alert_level) as alert_level
-            , max(m.picture) as picture
-        from
+            , t.temp
+            , t.volt
+            , t.distance
+            , t.create_time
+            , m.description
+            , m.sub_description
+            , m.lat
+            , m.long
+            , m.reference_line
+            , m.normally_level
+            , m.attention_level
+            , m.alert_level
+            , m.picture 
+          from
             sigfox_db t 
             left join sigfox_device m 
-            on t.device = m.device
-        group by
-            t.device
+              on t.device = m.device 
+          where
+            id IN (select max(id) from sigfox_db group by device)
         ");
 
         // $stmt->bindParam(':course_id', $course_id, PDO::PARAM_INT);
@@ -98,7 +98,7 @@
                 echo 'description:"' . $row['description'] . '",';
                 echo 'sub_description:"' . $row['sub_description'] . '",';
                 echo 'lat:"' . $row['lat'] . '",';
-                echo 'long:"' . $row['_long'] . '",';
+                echo 'long:"' . $row['long'] . '",';
                 echo 'reference_line:' . $row['reference_line'] . ',';
                 echo 'normally_level:' . $row['normally_level'] . ',';
                 echo 'attention_level:' . $row['attention_level'] . ',';
@@ -222,7 +222,8 @@
                             // echo '<div class="col-sm-3 sensor-frame' . ' divice-name' .'">';
                             //echo '<div class="col-sm-3 sensor-frame">';
                             echo '<div id="device-' . $row['device'] . '" class="col-sm-3 sensor-frame">';
-                            
+
+                            // 基準線－計測値を水位とします。
                             $waterLevel = $row['reference_line'] - $row['distance'];
 
                             echo '<h5>' . $waterLevel . 'cm</h5>';
@@ -230,12 +231,12 @@
                             echo '<dl>';                            
                             echo '<dt>最終更新日</dt>';
                             echo '<dd>' . $row['create_time'] . '</dd>';
-                            echo '<dt>平常時</dt>';
-                            echo '<dd>' . $row['normally_level'] . ' cm</dd>';
-                            echo '<dt>注意レベル</dt>';
-                            echo '<dd>' . $row['attention_level'] . ' cm</dd>';
                             echo '<dt>警報レベル</dt>';
                             echo '<dd>' . $row['alert_level'] . ' cm</dd>';
+                            echo '<dt>注意レベル</dt>';
+                            echo '<dd>' . $row['attention_level'] . ' cm</dd>';
+                            echo '<dt>平常時</dt>';
+                            echo '<dd>' . $row['normally_level'] . ' cm</dd>';
                             echo '</dl>';                           
                             echo '</div>';
                         }
@@ -247,6 +248,7 @@
                 <div class="row">
                     <div id="map" style="height:360px;margin-bottom: 20px;" class="col-sm-11">> </div>
                     <!-- <div id="map" class="col-sm-11">> </div> -->
+                    <!-- <div id="map-canvas" style="height:360px;margin-bottom: 20px;" class="col-sm-11">> </div> -->
 
                     <div class="col-sm-12">
                         <h4 id="device-description"> 設置場所説明 </h4>
@@ -255,7 +257,7 @@
                         <canvas id="chart1" height="60px"></canvas>
                     </div>
                     <div class="col-sm-11">
-                        <canvas id="chart2" height="30px"></canvas>
+                        <canvas id="chart2" height="50px"></canvas>
                     </div>
                     <div class="col-sm-11">
                         <div id="slider1"></div>
@@ -501,9 +503,9 @@
     // グラフ(左～)のラベル
     const label1 = '水位計';
     const label2 = '温度計';
-    const label3 = '平常値';
-    const label4 = '注意値';
-    const label5 = '警報値';
+    const label3 = '平常時';
+    const label4 = '注意レベル';
+    const label5 = '警報レベル';
 
     // グラフのデータ
     let data1 = [];
@@ -523,7 +525,9 @@
 
     <?php
         foreach ($data1 as $row) {
-            echo "data1_all.push('" . $row['distance'] . "');";
+            $waterLevel = $row['reference_line'] - $row['distance'];
+            // echo "data1_all.push('" . $row['distance'] . "');";
+            echo "data1_all.push('" . $waterLevel . "');";
         }
         foreach ($data1 as $row) {
             echo "data2_all.push('" . $row['temp'] . "');";
@@ -569,7 +573,6 @@
     feather.replace()
     </script>
 
-    <!-- <script src="js/markerwithlabel.js"></script> -->
     <script src="js/sgMapcode1.js"></script>
 
 </body>
