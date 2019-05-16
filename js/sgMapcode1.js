@@ -50,15 +50,22 @@ google.maps.event.addDomListener(window, 'load', function() {
                 animation: google.maps.Animation.DROP,    
                 icon: {url:"http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=|00ff00|",
                        scaledSize: new google.maps.Size(25, 40),
-                },    
+                },
+                icon: {path:"M -100,25 100,25 100,-25 -100,-25 z",
+                fillColor: "#00ee00",                //塗り潰し色
+                fillOpacity: 0.5,                    //塗り潰し透過率
+                strokeColor: 'rgba(34,178,76)',
+                // strokeOpacity:0.5,//枠線の透過率
+                strokeWeight:5,//枠線の太さ
+                },
                 title: description,
                 label: {
                     // color: '#0044aa',
-                    color: '#0000ff',
+                    color: '#000000',
                     fontFamily: 'sans-serif',
                     fontSize: '40px',
                     fontWeight: 'bold',
-                    text: String(waterLevel+'cm')
+                    text: String(waterLevel+' cm')
                 }
             });
 
@@ -91,14 +98,21 @@ google.maps.event.addDomListener(window, 'load', function() {
                 icon: {url: "http://chart.apis.google.com/chart?chst=d_map_pin_letter&chld=|ffff00|",
                         scaledSize: new google.maps.Size(25, 40)
                 },    
+                icon: {path:"M -100,25 100,25 100,-25 -100,-25 z",
+                fillColor: "#eeee00",                //塗り潰し色
+                fillOpacity: 0.5,                    //塗り潰し透過率
+                strokeColor: 'rgba(253,191,8)',
+                // strokeOpacity:0.5,//枠線の透過率
+                strokeWeight:5,//枠線の太さ
+                },
                 title: description,
                 label: {
                     // color: '#0044aa',
-                    color: '#0000ff',
+                    color: '#000000',
                     fontFamily: 'sans-serif',
                     fontSize: '40px',
                     fontWeight: 'bold',
-                    text: String(waterLevel+'cm')
+                    text: String(waterLevel+' cm')
                 }
             });                   
         }; 
@@ -139,15 +153,22 @@ google.maps.event.addDomListener(window, 'load', function() {
                 //     strokeColor: "#ff0000",              //線の色
                 //     strokeWeight: 4.0                    //線の太
                 // },
+                icon: {path:"M -100,25 100,25 100,-25 -100,-25 z",
+                fillColor: "#ee0000",                //塗り潰し色
+                fillOpacity: 0.5,                    //塗り潰し透過率
+                strokeColor: 'rgba(256,00,00)',
+                // strokeOpacity:0.5,//枠線の透過率
+                strokeWeight:5,//枠線の太さ
+                },
 
                 title: description,
                 label: {
                     // color: '#0044aa',
-                    color: '#0000ff',
+                    color: '#000000',
                     fontFamily: 'sans-serif',
                     fontSize: '40px',
                     fontWeight: 'bold',
-                    text: String(waterLevel+'cm')
+                    text: String(waterLevel+' cm')
                 }
             });                   
         }; 
